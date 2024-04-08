@@ -1,6 +1,6 @@
 import { writeFileSync } from 'fs'
-import { RandomPorject } from '../src/contracts/randomPorject'
-import { privateKey } from './privateKey'
+import { OrdinalAuction } from '../src/contracts/ordinalAuction'
+import { myPrivateKey } from './privateKey'
 import { bsv, TestWallet, DefaultProvider, sha256 } from 'scrypt-ts'
 
 function getScriptHash(scriptPubKeyHex: string) {
@@ -11,22 +11,28 @@ function getScriptHash(scriptPubKeyHex: string) {
     return res.reverse().join('')
 }
 
+
+
 async function main() {
-    await RandomPorject.loadArtifact()
+    /*
+    
+    1.  load artifacts of compiled contract
+    2.
+
+    */
+    
+    await OrdinalAuction.loadArtifact()
 
     // Prepare signer. 
     // See https://scrypt.io/docs/how-to-deploy-and-call-a-contract/#prepare-a-signer-and-provider
-    const signer = new TestWallet(privateKey, new DefaultProvider({
+    const signer = new TestWallet(myPrivateKey, new DefaultProvider({
         network: bsv.Networks.testnet
     }))
 
     // TODO: Adjust the amount of satoshis locked in the smart contract:
     const amount = 100
 
-    const instance = new RandomPorject(
-        // TODO: Pass constructor parameter values.
-        0n
-    )
+    const instance = new OrdinalAuction()
 
     // Connect to a signer.
     await instance.connect(signer)
@@ -39,9 +45,10 @@ async function main() {
     const shFile = `.scriptHash`;
     writeFileSync(shFile, scriptHash);
 
-    console.log('RandomPorject contract was successfully deployed!')
+    console.log('OrdinalAuction contract was successfully deployed!')
     console.log(`TXID: ${deployTx.id}`)
     console.log(`scriptHash: ${scriptHash}`)
+    
 }
 
 main()
